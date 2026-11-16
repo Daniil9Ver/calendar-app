@@ -1,0 +1,15 @@
+# Build output (rebuild with build.bat)
+build/
+dist/
+*.spec
+__pycache__/
+*.pyc
+
+# Personal data - NEVER commit (Apple ID, app password, private calendar links)
+calendar_settings.json
+calendar_settings.json.tmp
+calendar_log.txt
+calendar_log.txt.old
+feeds.txt
+*.log
+.env
