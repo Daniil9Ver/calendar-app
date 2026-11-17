@@ -43,4 +43,4 @@ Read-only: it shows events but doesn't create or edit them.
 Needs Python 3 (`py` launcher). Run `build.bat`. Output: `dist\iCloudCalendar.exe`.
 Run from source: `py calendar_app.py`.
 
-Settings at the top of `calendar_app.py`: `FIRST_WEEKDAY` (0 = Monday, 6 = Sunday), colours, auto-refresh interval.
+Settings are at the top of `calendar_app.py`: `FIRST_WEEKDAY` (0 = Monday, 6 = Sunday), colours, auto-refresh interval.
