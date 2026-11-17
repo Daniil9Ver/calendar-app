@@ -1,10 +1,11 @@
 """
-iCloud Calendar for Windows
+Calendar Viewer for Windows
 ---------------------------
-A small desktop calendar (Day / Week / Month) that reads your iCloud
-calendars over CalDAV and iCal feed links. Settings and log are kept next to the .exe.
+A small desktop calendar (Day / Week / Month) that shows any subscribed calendar
+(.ics / iCal / webcal links from Google, Outlook, university timetables, etc.)
+and, optionally, your iCloud calendars over CalDAV. Settings and log are kept next to the .exe.
 
-Run:  py calendar_app.py          (real iCloud data)
+Run:  py calendar_app.py          (your calendars)
       py calendar_app.py --demo   (sample events, no sign-in)
 """
 
@@ -23,7 +24,7 @@ import tkinter as tk
 import tkinter.font as tkfont
 from tkinter import messagebox, ttk
 
-APP_NAME = "iCloud Calendar"
+APP_NAME = "Calendar Viewer"
 KEYRING_SERVICE = "iCloudCalendarApp"
 KEYRING_USER_KEY = "__apple_id__"
 KEYRING_FEEDS_KEY = "__ics_feeds__"
@@ -31,6 +32,7 @@ CALDAV_URL = "https://caldav.icloud.com"
 APP_PASSWORD_URL = "https://account.apple.com/account/manage"
 FIRST_WEEKDAY = 0  # 0 = Monday, 6 = Sunday
 AUTO_REFRESH_MS = 15 * 60 * 1000
+# Old internal names kept on purpose so existing settings still load.
 LEGACY_DIR = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "iCloudCalendar")
 
 
@@ -74,7 +76,7 @@ def write_settings(apple_id: str, app_password: str, feeds: list[str]):
             os.remove(SETTINGS_FILE)
         return
     data = {
-        "_note": "iCloud Calendar settings. Contains private links and your app password - keep this file private.",
+        "_note": "Calendar Viewer settings. Contains private links and your app password - keep this file private.",
         "apple_id": apple_id,
         "app_password": app_password,
         "feeds": feeds,
@@ -304,7 +306,7 @@ class IcsFeedSource:
         fresh = self._loaded_at and (dt.datetime.now() - self._loaded_at).total_seconds() < self.CACHE_SECONDS
         if self._cal is not None and fresh:
             return self._cal
-        req = urllib.request.Request(self.url, headers={"User-Agent": "iCloudCalendar/1.0 (Windows)",
+        req = urllib.request.Request(self.url, headers={"User-Agent": "CalendarViewer/1.0 (Windows)",
                                                         "Accept": "text/calendar, */*"})
         with urllib.request.urlopen(req, timeout=40) as resp:
             data = resp.read()
@@ -491,9 +493,10 @@ class SettingsDialog(tk.Toplevel):
                 row=row, column=0, columnspan=2, sticky="w")
 
         # --- iCal feeds
-        label("Calendar feed links (iCal)", 0, font=app.f_title, fg=C["text"])
-        label("Paste one link per line, e.g. your university timetable from Calendar Centre "
-              "(Copy Link). Links starting with webcal:// or https:// both work.", 1,
+        label("Calendar feed links (iCal / .ics)", 0, font=app.f_title, fg=C["text"])
+        label("Paste one link per line: any calendar subscription link, e.g. Google Calendar's "
+              "secret iCal address, an Outlook ICS link or your university timetable. "
+              "Links starting with webcal://, https:// or http:// all work.", 1,
               font=app.f_body, fg=C["muted"])
         self.feeds_txt = tk.Text(self, width=56, height=4, font=app.f_body, wrap="none",
                                  relief="solid", bd=1, highlightthickness=0)
